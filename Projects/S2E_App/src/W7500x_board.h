@@ -17,9 +17,10 @@
 /* Target Board Selector */
 //#define DEVICE_BOARD_NAME	WIZwiki_W7500ECO
 //#define DEVICE_BOARD_NAME	W7500P_S2E
-#define DEVICE_BOARD_NAME	WIZ750SR
+//#define DEVICE_BOARD_NAME	WIZ750SR
 //#define DEVICE_BOARD_NAME	WIZ750MINI
 //#define DEVICE_BOARD_NAME	WIZ750JR
+#define DEVICE_BOARD_NAME WIZ750DUO  // Added by James. 17-08-14
 
 #ifdef DEVICE_BOARD_NAME
 	#if (DEVICE_BOARD_NAME == WIZ750SR)
@@ -34,6 +35,20 @@
 		#define DEVICE_PLL_SOURCE_CLOCK      PLL_SOURCE_12MHz
 		#define DEVICE_TARGET_SYSTEM_CLOCK   SYSTEM_CLOCK_48MHz
 		#define DEVICE_ID_DEFAULT            "WIZ750SR" // Device name
+		
+	#elif (DEVICE_BOARD_NAME == WIZ750DUO)
+		#define __W7500P__
+		#define __USE_UART_IF_SELECTOR__	// RS-232/TTL or RS-422/485 selector using UART IF selector pin. This pin will be eliminated on the target board. 
+		//#define __USE_EXT_EEPROM__			// External EEPROM or Internal Data flash (DAT0/1)
+		#define __USE_BOOT_ENTRY__			// Application boot mode entry pin activated
+		#define __USE_APPBACKUP_AREA__		// If this option activated, Application firmware area is consists of App (50kB) and App backup (50kB). If not, user's application can be 100kB size. (Does not use the backup area)
+		#define __USE_GPIO_HARDWARE_FLOWCONTROL__
+		#define __USE_USERS_GPIO__
+		#define DEVICE_CLOCK_SELECT	         CLOCK_SOURCE_EXTERNAL
+		#define DEVICE_PLL_SOURCE_CLOCK      PLL_SOURCE_12MHz
+		#define DEVICE_TARGET_SYSTEM_CLOCK   SYSTEM_CLOCK_48MHz
+		#define DEVICE_ID_DEFAULT            "WIZ750DUE" // Device name. Edited by James. 17-08-14
+	
 	#elif (DEVICE_BOARD_NAME == W7500P_S2E) // Chip product
 		#define __W7500P__
 		#define __USE_UART_IF_SELECTOR__	// RS-232/TTL or RS-422/485 selector using UART IF selector pin
