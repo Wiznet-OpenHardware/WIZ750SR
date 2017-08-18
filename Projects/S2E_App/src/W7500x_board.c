@@ -35,11 +35,11 @@ void W7500x_Board_Init(void)
 	PHY_Init();
 	
 	/* HW_TRIG input pin - Check this Pin only once at boot (switch) */
-	init_hw_trig_pin();
-	flag_hw_trig_enable = (get_hw_trig_pin()?0:1);
+	//init_hw_trig_pin();
+	//flag_hw_trig_enable = (get_hw_trig_pin()?0:1);
 	
 	/* PHY link input pin */
-#if ((DEVICE_BOARD_NAME == WIZ750SR) || (DEVICE_BOARD_NAME == W7500P_S2E) || (DEVICE_BOARD_NAME == WIZ750MINI) || (DEVICE_BOARD_NAME == WIZ750JR))
+#if ((DEVICE_BOARD_NAME == WIZ750SR) || (DEVICE_BOARD_NAME == W7500P_S2E) || (DEVICE_BOARD_NAME == WIZ750MINI) || (DEVICE_BOARD_NAME == WIZ750JR) || (DEVICE_BOARD_NAME == WIZ750DUO))
 	init_phylink_in_pin();
 #endif
 	
@@ -87,13 +87,13 @@ static void PHY_Init(void)
 	mdio_init(GPIOB, W7500x_MDC, W7500x_MDIO);
 	//mdio_write(GPIOB, PHYREG_CONTROL, CNTL_RESET); // PHY Reset
 	
-	#ifdef __W7500P__ // W7500P
-		set_link(FullDuplex10);
+	//#ifdef __W7500P__ // W7500P
+		//set_link(FullDuplex10);
 		//set_link(HalfDuplex10);
 		//set_link(FullDuplex100);
 		//set_link(HalfDuplex100);
 		//set_link(AUTONEGO);
-	#endif
+	//#endif
 	
 	// ## for debugging
 	//printf("\r\nPHYADDR = %.3x, PHYREGADDR = %x, VAL = 0x%.4x\r\n", PHY_ADDR, 0, mdio_read(GPIOB, 0)); // [RW] Control, default: 0x3100 / 0011 0001 0000 0000b

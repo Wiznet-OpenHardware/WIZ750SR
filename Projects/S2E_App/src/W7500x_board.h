@@ -20,7 +20,7 @@
 //#define DEVICE_BOARD_NAME	WIZ750SR
 //#define DEVICE_BOARD_NAME	WIZ750MINI
 //#define DEVICE_BOARD_NAME	WIZ750JR
-#define DEVICE_BOARD_NAME WIZ750DUO  // Added by James. 17-08-14
+#define DEVICE_BOARD_NAME	WIZ750DUO  // Added by James. 17-08-14
 
 #ifdef DEVICE_BOARD_NAME
 	#if (DEVICE_BOARD_NAME == WIZ750SR)
@@ -38,7 +38,7 @@
 		
 	#elif (DEVICE_BOARD_NAME == WIZ750DUO)
 		#define __W7500P__
-		#define __USE_UART_IF_SELECTOR__	// RS-232/TTL or RS-422/485 selector using UART IF selector pin. This pin will be eliminated on the target board. 
+		//#define __USE_UART_IF_SELECTOR__	// RS-232/TTL or RS-422/485 selector using UART IF selector pin. This pin will be eliminated on the target board. 
 		//#define __USE_EXT_EEPROM__			// External EEPROM or Internal Data flash (DAT0/1)
 		#define __USE_BOOT_ENTRY__			// Application boot mode entry pin activated
 		#define __USE_APPBACKUP_AREA__		// If this option activated, Application firmware area is consists of App (50kB) and App backup (50kB). If not, user's application can be 100kB size. (Does not use the backup area)
@@ -47,7 +47,7 @@
 		#define DEVICE_CLOCK_SELECT	         CLOCK_SOURCE_EXTERNAL
 		#define DEVICE_PLL_SOURCE_CLOCK      PLL_SOURCE_12MHz
 		#define DEVICE_TARGET_SYSTEM_CLOCK   SYSTEM_CLOCK_48MHz
-		#define DEVICE_ID_DEFAULT            "WIZ750DUE" // Device name. Edited by James. 17-08-14
+		#define DEVICE_ID_DEFAULT            "WIZ750DUO" // Device name. Edited by James. 17-08-14
 	
 	#elif (DEVICE_BOARD_NAME == W7500P_S2E) // Chip product
 		#define __W7500P__
@@ -223,11 +223,13 @@
 #ifdef __USE_USERS_GPIO__
 
 	//#define MAX_USER_IOn    16
-	#define USER_IOn       4
+	#define USER_IOn       6
 	#define USER_IO_A      (uint16_t)(0x01 <<  0)     // USER's I/O A
 	#define USER_IO_B      (uint16_t)(0x01 <<  1)     // USER's I/O B
 	#define USER_IO_C      (uint16_t)(0x01 <<  2)     // USER's I/O C
 	#define USER_IO_D      (uint16_t)(0x01 <<  3)     // USER's I/O D
+	#define USER_IO_E      (uint16_t)(0x01 <<  4)     // USER's I/O E
+	#define USER_IO_F      (uint16_t)(0x01 <<  5)     // USER's I/O F
 
 	#define USER_IO_DEFAULT_PAD_AF		PAD_AF1 // [2nd] GPIO
 	#define USER_IO_AIN_PAD_AF			PAD_AF3 // [4th] AIN
@@ -251,11 +253,19 @@
 	#define USER_IO_D_PORT				GPIOC
 	#define USER_IO_D_ADC_CH			ADC_CH7
 
+	// for Duo
+	#define USER_IO_E_PIN				GPIO_Pin_7 
+	#define USER_IO_E_PORT				GPIOA
+	#define USER_IO_E_ADC_CH			USER_IO_NO_ADC
+
+	#define USER_IO_F_PIN				GPIO_Pin_8
+	#define USER_IO_F_PORT				GPIOA
+	#define USER_IO_F_ADC_CH			USER_IO_NO_ADC
 #endif
 
 
 // Status LEDs define
-#if ((DEVICE_BOARD_NAME == WIZ750SR) || (DEVICE_BOARD_NAME == W7500P_S2E) || (DEVICE_BOARD_NAME == WIZ750MINI))
+#if ((DEVICE_BOARD_NAME == WIZ750SR) || (DEVICE_BOARD_NAME == W7500P_S2E) || (DEVICE_BOARD_NAME == WIZ750MINI) || (DEVICE_BOARD_NAME == WIZ750DUO))
 
 	#define LED1_PIN			GPIO_Pin_2
 	#define LED1_GPIO_PORT		GPIOB

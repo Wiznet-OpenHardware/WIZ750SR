@@ -342,7 +342,8 @@ uint16_t proc_SEGCP(uint8_t* segcp_req, uint8_t* segcp_rep)
 						}
 						else
 						{
-							sprintf(trep,"%d.%d.%d", dev_config->fw_ver[0], dev_config->fw_ver[1], dev_config->fw_ver[2]);
+							//sprintf(trep,"%d.%d.%d", dev_config->fw_ver[0], dev_config->fw_ver[1], dev_config->fw_ver[2]);
+							sprintf(trep,"%d.%d.%d%s", dev_config->fw_ver[0], dev_config->fw_ver[1], dev_config->fw_ver[2], STR_VERSION_STATUS);
 						}
 						break;
 					case SEGCP_MN: sprintf(trep,"%s", dev_config->module_name);

@@ -52,7 +52,8 @@ void set_DevConfig_to_factory_value(void)
 	dev_config.network_info_common.subnet[2] = 255;
 	dev_config.network_info_common.subnet[3] = 0;
 
-	dev_config.network_info[0].working_mode = TCP_SERVER_MODE; //UDP_MODE; //TCP_MIXED_MODE; 
+	//dev_config.network_info[0].working_mode = TCP_SERVER_MODE; //UDP_MODE; //TCP_MIXED_MODE; 
+	dev_config.network_info[0].working_mode = TCP_CLIENT_MODE;
 	dev_config.network_info[0].state = ST_OPEN;
 	dev_config.network_info[0].remote_ip[0] = 192;
 	dev_config.network_info[0].remote_ip[1] = 168;
@@ -62,7 +63,8 @@ void set_DevConfig_to_factory_value(void)
 	dev_config.network_info[0].remote_port = 5000;
 	dev_config.network_info[0].inactivity = 0;		// sec, default: NONE
 	dev_config.network_info[0].reconnection = 3000;	// msec, default: 3 sec
-	dev_config.network_info[0].packing_time = 0;
+	//dev_config.network_info[0].packing_time = 0;
+	dev_config.network_info[0].packing_time = 500;
 	dev_config.network_info[0].packing_size = 0;
 	dev_config.network_info[0].packing_delimiter[0] = 0; // packing_delimiter used only one-byte (for WIZ107SR compatibility)
 	dev_config.network_info[0].packing_delimiter[1] = 0;
@@ -111,9 +113,9 @@ void set_DevConfig_to_factory_value(void)
 	dev_config.options.serial_trigger[2] = 0x2b;
 
 #ifdef __USE_USERS_GPIO__
-	dev_config.user_io_info.user_io_enable = USER_IO_A | USER_IO_B | USER_IO_C | USER_IO_D; // [Enabled] / Disabled	
-	dev_config.user_io_info.user_io_type = USER_IO_A; // Analog: USER_IO_A, / Digital: USER_IO_B, USER_IO_C, USER_IO_D
-	dev_config.user_io_info.user_io_direction = USER_IO_C | USER_IO_D; // IN / IN / OUT / OUT
+	dev_config.user_io_info.user_io_enable = USER_IO_A | USER_IO_B | USER_IO_C | USER_IO_D | USER_IO_E | USER_IO_F; // [Enabled] / Disabled	
+	dev_config.user_io_info.user_io_type = USER_IO_A | USER_IO_B; // Analog: USER_IO_A, USER_IO_B / Digital: USER_IO_C, USER_IO_D, USER_IO_E, USER_IO_F
+	dev_config.user_io_info.user_io_direction = 0; // All Input
 	dev_config.user_io_info.user_io_status = 0;
 #else
 	dev_config.user_io_info.user_io_enable = 0;

@@ -411,6 +411,8 @@ void display_Dev_Info_header(void)
 #if ((DEVICE_BOARD_NAME == WIZ750SR) || (DEVICE_BOARD_NAME == W7500P_S2E) || (DEVICE_BOARD_NAME == WIZ750MINI) || (DEVICE_BOARD_NAME == WIZ750JR))
 	printf(" %s \r\n", DEVICE_ID_DEFAULT);
 	printf(" >> WIZnet Serial to Ethernet Device\r\n");
+#elif (DEVICE_BOARD_NAME == WIZ750DUO)
+	printf(" %s \r\n", DEVICE_ID_DEFAULT);
 #else
 	#ifndef __W7500P__
 		printf(" [W7500] Serial to Ethernet Device\r\n");
@@ -490,7 +492,7 @@ void display_Dev_Info_main(void)
 		printf("\t- %s\r\n", (dev_config->options.serial_command == 1)?STR_ENABLED:STR_DISABLED);
 		printf("\t- [%.2X][%.2X][%.2X] (Hex only)\r\n", dev_config->options.serial_trigger[0], dev_config->options.serial_trigger[1], dev_config->options.serial_trigger[2]);
 	
-#if ((DEVICE_BOARD_NAME == WIZ750SR) || (DEVICE_BOARD_NAME == W7500P_S2E) || (DEVICE_BOARD_NAME == WIZ750MINI) || (DEVICE_BOARD_NAME == WIZ750JR))
+#if ((DEVICE_BOARD_NAME == WIZ750SR) || (DEVICE_BOARD_NAME == W7500P_S2E) || (DEVICE_BOARD_NAME == WIZ750MINI) || (DEVICE_BOARD_NAME == WIZ750JR) || (DEVICE_BOARD_NAME == WIZ750DUO))
 	printf(" - Hardware information: Status pins\r\n");
 		printf("\t- Status 1: [%s] - %s\r\n", "PA_10", dev_config->serial_info[0].dtr_en?"DTR":"PHY link");
 		printf("\t- Status 2: [%s] - %s\r\n", "PA_01", dev_config->serial_info[0].dsr_en?"DSR":"TCP connection"); // shared pin; HW_TRIG (input) / TCP connection indicator (output)
@@ -501,6 +503,8 @@ void display_Dev_Info_main(void)
 		printf("\t- UserIO B: [%s] - %s / %s\r\n", "PC_12", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[1])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[1])]); 
 		printf("\t- UserIO C: [%s] - %s / %s\r\n", "PC_09", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[2])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[2])]); 
 		printf("\t- UserIO D: [%s] - %s / %s\r\n", "PC_08", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[3])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[3])]); 
+		printf("\t- UserIO E: [%s] - %s / %s\r\n", "PA_07", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[4])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[4])]); 
+		printf("\t- UserIO F: [%s] - %s / %s\r\n", "PA_08", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[5])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[5])]); 
 #endif
 
 #endif

@@ -12,7 +12,8 @@
 #define MAINTENANCE_VER		0
 
 //#define STR_VERSION_STATUS	"Develop" // or "Stable"
-#define STR_VERSION_STATUS	"Stable"
+//#define STR_VERSION_STATUS	"Stable"
+#define STR_VERSION_STATUS	"duo"
 
 ////////////////////////////////
 // W7500x HW Socket Definition//

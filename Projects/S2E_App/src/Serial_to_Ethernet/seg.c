@@ -49,6 +49,12 @@ uint8_t flag_connect_pw_auth = SEG_DISABLE; // TCP_SERVER_MODE only
 uint8_t flag_sent_keepalive = SEG_DISABLE;
 uint8_t flag_sent_first_keepalive = SEG_DISABLE;
 
+// for DUO
+uint8_t enable_event_timer = SEG_DISABLE;
+volatile uint16_t event_time = 0;
+uint8_t flag_event_occurred = SEG_DISABLE; // for Time delimiter
+
+
 // static variables for function: check_modeswitch_trigger()
 static uint8_t triggercode_idx;
 static uint8_t ch_tmp[3];
@@ -88,6 +94,8 @@ void proc_SEG_tcp_client(uint8_t sock);
 void proc_SEG_tcp_server(uint8_t sock);
 void proc_SEG_tcp_mixed(uint8_t sock);
 void proc_SEG_udp(uint8_t sock);
+
+void proc_DUO_tcp_client(uint8_t sock);
 
 void uart_to_ether(uint8_t sock);
 void ether_to_uart(uint8_t sock);
@@ -158,7 +166,8 @@ void do_seg(uint8_t sock)
 		switch(net->working_mode)
 		{
 			case TCP_CLIENT_MODE:
-				proc_SEG_tcp_client(sock);
+				//proc_SEG_tcp_client(sock);
+				proc_DUO_tcp_client(sock);
 				break;
 			
 			case TCP_SERVER_MODE:
@@ -1596,6 +1605,20 @@ void seg_timer_msec(void)
 		if(connection_auth_time < 0xffff) 	connection_auth_time++;
 		else								connection_auth_time = 0;
 	}
+	
+	// Event timer for Duo
+	if(enable_event_timer)
+	{
+		if(event_time < netinfo->packing_time)
+		{
+			event_time++;
+		}
+		else
+		{
+			event_time = 0;
+			flag_event_occurred = 1;
+		}
+	}
 }
 
 // This function have to call every 1 second by Timer IRQ handler routine.
@@ -1611,3 +1634,218 @@ void seg_timer_sec(void)
 }
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// Custom functions for Duo System Electronics (µà¿À¼Ò´Ð½º)
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+void proc_DUO_tcp_client(uint8_t sock)
+{
+	DevConfig *s2e = get_DevConfig_pointer();
+	struct __network_info *net = (struct __network_info *)get_DevConfig_pointer()->network_info;
+	struct __serial_info *serial = (struct __serial_info *)get_DevConfig_pointer()->serial_info;
+	struct __options *option = (struct __options *)&(get_DevConfig_pointer()->options);
+	
+	uint16_t source_port;
+	uint8_t destip[4] = {0, };
+	uint16_t destport = 0;
+	
+	uint16_t i;
+	uint16_t data_len, sent_len;
+	uint16_t io_val[USER_IOn];
+	uint16_t ain_val[2];
+	
+	uint8_t state = getSn_SR(sock);
+	switch(state)
+	{
+		case SOCK_INIT:
+			if(reconnection_time >= net->reconnection)
+			{
+				reconnection_time = 0; // reconnection time variable clear
+				
+				// TCP connect exception checker; e.g., dns failed / zero srcip ... and etc.
+				if(check_tcp_connect_exception() == ON) return;
+				
+				// TCP connect
+				connect(sock, net->remote_ip, net->remote_port);
+#ifdef _SEG_DEBUG_
+				printf(" > SEG:TCP_CLIENT_MODE:CLIENT_CONNECTION\r\n");
+#endif
+			}
+			break;
+		
+		case SOCK_ESTABLISHED:
+			if(getSn_IR(sock) & Sn_IR_CON)
+			{
+				///////////////////////////////////////////////////////////////////////////////////////////////////
+				// S2E: TCP client mode initialize after connection established (only once)
+				///////////////////////////////////////////////////////////////////////////////////////////////////
+				//net->state = ST_CONNECT;
+				set_device_status(ST_CONNECT);
+				
+				if(!inactivity_time && net->inactivity)		enable_inactivity_timer = SEG_ENABLE;
+				if(!keepalive_time && net->keepalive_en)	enable_keepalive_timer = SEG_ENABLE;
+				
+				// TCP server mode only, This flag have to be enabled always at TCP client mode
+				//if(option->pw_connect_en == SEG_ENABLE)		flag_connect_pw_auth = SEG_ENABLE;
+				flag_connect_pw_auth = SEG_ENABLE;
+				
+				// Reconnection timer disable
+				if(enable_reconnection_timer == SEG_ENABLE)
+				{
+					enable_reconnection_timer = SEG_DISABLE;
+					reconnection_time = 0;
+				}
+				
+				// Serial debug message printout
+				if(serial->serial_debug_en == SEG_ENABLE)
+				{
+					getsockopt(sock, SO_DESTIP, &destip);
+					getsockopt(sock, SO_DESTPORT, &destport);
+					printf(" > SEG:CONNECTED TO - %d.%d.%d.%d : %d\r\n",destip[0], destip[1], destip[2], destip[3], destport);
+				}
+				
+				// UART Ring buffer clear
+				BUFFER_CLEAR(data_rx);
+				
+				// Debug message enable flag: TCP client sokect open 
+				isSocketOpen_TCPclient = OFF;
+				
+				// Event timer enable
+				enable_event_timer = SEG_ENABLE;
+				
+				setSn_IR(sock, Sn_IR_CON);
+			}
+			
+			// Serial to Ethernet process
+			//if(BUFFER_USED_SIZE(data_rx) || u2e_size)	uart_to_ether(sock);
+			//if(getSn_RX_RSR(sock) 	|| e2u_size)		ether_to_uart(sock);
+			
+			// Custom firmware for DUO
+			// Data send process: AIN value & DIN status
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			if(flag_event_occurred)
+			{
+				#define STEP_STR    "step"
+				#define HIGH_STR    "HIGH"
+				#define LOW_STR     "LOW"
+				#define STEPS       (50)
+				#define STEP_VAL    (4096/STEPS)
+				
+				get_user_io_val(USER_IO_A, &io_val[0]);
+				get_user_io_val(USER_IO_B, &io_val[1]);
+				get_user_io_val(USER_IO_C, &io_val[2]);
+				get_user_io_val(USER_IO_D, &io_val[3]);
+				get_user_io_val(USER_IO_E, &io_val[4]);
+				get_user_io_val(USER_IO_F, &io_val[5]);
+				
+				//printf("%d / %d / %d / %d / %d / %d\r\n", io_val[0], io_val[1], io_val[2], io_val[3], io_val[4], io_val[5]);
+				
+				ain_val[0] = (io_val[0] / STEP_VAL) + 1;
+				ain_val[1] = (io_val[1] / STEP_VAL) + 1;
+				
+				if(ain_val[0] > STEPS) ain_val[0] = STEPS;
+				if(ain_val[1] > STEPS) ain_val[1] = STEPS;
+				
+				data_len = sprintf((char *)g_send_buf, "{\"AIN1\":\"%s%d\",\"AIN2\":\"%s%d\",\"DIN1\":\"%s\",\"DIN2\":\"%s\",\"DIN3\":\"%s\",\"DIN4\":\"%s\"}",
+					STEP_STR, ain_val[0], 
+					STEP_STR, ain_val[1], 
+					io_val[2]?HIGH_STR:LOW_STR,
+					io_val[3]?HIGH_STR:LOW_STR,
+					io_val[4]?HIGH_STR:LOW_STR,
+					io_val[5]?HIGH_STR:LOW_STR
+				);
+				
+				//for(i = 0; i < data_len; i++) printf("%c", g_send_buf[i]);
+				//printf("\r\n");
+				
+				// Data send
+				sent_len = (uint16_t)send(sock, g_send_buf, data_len);
+				
+				// flag clear
+				//if(data_len == sent_len) flag_event_occurred = SEG_DISABLE;
+				flag_event_occurred = SEG_DISABLE;
+			}
+			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			
+			// Check the inactivity timer
+			if((enable_inactivity_timer == SEG_ENABLE) && (inactivity_time >= net->inactivity))
+			{
+				//disconnect(sock);
+				process_socket_termination(sock);
+				
+				// Keep-alive timer disabled
+				enable_keepalive_timer = DISABLE;
+				keepalive_time = 0;
+#ifdef _SEG_DEBUG_
+				printf(" > INACTIVITY TIMER: TIMEOUT\r\n");
+#endif
+			}
+			
+			// Check the keee-alive timer
+			if((net->keepalive_en == SEG_ENABLE) && (enable_keepalive_timer == SEG_ENABLE))
+			{
+				// Send the first keee-alive packet
+				if((flag_sent_first_keepalive == SEG_DISABLE) && (keepalive_time >= net->keepalive_wait_time) && (net->keepalive_wait_time != 0))
+				{
+#ifdef _SEG_DEBUG_
+					printf(" >> send_keepalive_packet_first [%d]\r\n", keepalive_time);
+#endif
+					send_keepalive_packet_manual(sock); // <-> send_keepalive_packet_auto()
+					keepalive_time = 0;
+					
+					flag_sent_first_keepalive = SEG_ENABLE;
+				}
+				// Send the keee-alive packet periodically
+				if((flag_sent_first_keepalive == SEG_ENABLE) && (keepalive_time >= net->keepalive_retry_time) && (net->keepalive_retry_time != 0))
+				{
+#ifdef _SEG_DEBUG_
+					printf(" >> send_keepalive_packet_manual [%d]\r\n", keepalive_time);
+#endif
+					send_keepalive_packet_manual(sock);
+					keepalive_time = 0;
+				}
+			}
+			
+			break;
+		
+		case SOCK_CLOSE_WAIT:
+			//while(getSn_RX_RSR(sock) || e2u_size) ether_to_uart(sock); // receive remaining packets
+			disconnect(sock);
+			break;
+		
+		case SOCK_FIN_WAIT:
+		case SOCK_CLOSED:
+			set_device_status(ST_OPEN);
+			reset_SEG_timeflags();
+			
+			u2e_size = 0;
+			e2u_size = 0;
+			
+			source_port = get_tcp_any_port();
+#ifdef _SEG_DEBUG_
+			printf(" > TCP CLIENT: client_any_port = %d\r\n", client_any_port);
+#endif		
+			if(socket(sock, Sn_MR_TCP, source_port, Sn_MR_ND) == sock)
+			{
+				// Replace the command mode switch code GAP time (default: 500ms)
+				if((option->serial_command == SEG_ENABLE) && net->packing_time) modeswitch_gap_time = net->packing_time;
+				
+				// Enable the reconnection Timer
+				if((enable_reconnection_timer == SEG_DISABLE) && net->reconnection) enable_reconnection_timer = SEG_ENABLE;
+				
+				if(serial->serial_debug_en == SEG_ENABLE)
+				{
+					if(isSocketOpen_TCPclient == OFF)
+					{
+						printf(" > SEG:TCP_CLIENT_MODE:SOCKOPEN\r\n");
+						isSocketOpen_TCPclient = ON;
+					}
+				}
+			}
+		
+			break;
+			
+		default:
+			break;
+	}
+}

@@ -11,13 +11,16 @@
 #endif
 
 #ifdef __USE_USERS_GPIO__
-	const uint16_t USER_IO_PIN[USER_IOn] =     {USER_IO_A_PIN, USER_IO_B_PIN, USER_IO_C_PIN, USER_IO_D_PIN};
-	GPIO_TypeDef* USER_IO_PORT[USER_IOn] =     {USER_IO_A_PORT, USER_IO_B_PORT, USER_IO_C_PORT, USER_IO_D_PORT};
-	uint8_t     USER_IO_ADC_CH[USER_IOn] =     {USER_IO_A_ADC_CH, USER_IO_B_ADC_CH, USER_IO_C_ADC_CH, USER_IO_D_ADC_CH};
+	const uint16_t USER_IO_PIN[USER_IOn] =     {USER_IO_A_PIN, USER_IO_B_PIN, USER_IO_C_PIN, USER_IO_D_PIN, USER_IO_E_PIN, USER_IO_F_PIN};
+	GPIO_TypeDef* USER_IO_PORT[USER_IOn] =     {USER_IO_A_PORT, USER_IO_B_PORT, USER_IO_C_PORT, USER_IO_D_PORT, USER_IO_E_PORT, USER_IO_F_PORT};
+	uint8_t     USER_IO_ADC_CH[USER_IOn] =     {USER_IO_A_ADC_CH, USER_IO_B_ADC_CH, USER_IO_C_ADC_CH, USER_IO_D_ADC_CH, USER_IO_E_ADC_CH, USER_IO_F_ADC_CH};
 
-	uint8_t        USER_IO_SEL[USER_IOn] =     {USER_IO_A, USER_IO_B, USER_IO_C, USER_IO_D};
-	const char*    USER_IO_STR[USER_IOn] =     {"a", "b", "c", "d"};
-	const char*    USER_IO_PIN_STR[USER_IOn] = {"p28\0", "p27\0", "p26\0", "p25\0",}; 
+	//uint8_t        USER_IO_SEL[USER_IOn] =     {USER_IO_A, USER_IO_B, USER_IO_C, USER_IO_D};
+	//const char*    USER_IO_STR[USER_IOn] =     {"a", "b", "c", "d"};
+	//const char*    USER_IO_PIN_STR[USER_IOn] = {"p28\0", "p27\0", "p26\0", "p25\0",}; 
+	uint8_t        USER_IO_SEL[USER_IOn] =     {USER_IO_A, USER_IO_B, USER_IO_C, USER_IO_D, USER_IO_E, USER_IO_F};
+	const char*    USER_IO_PIN_STR[USER_IOn] = {"pc13\0", "pc12\0", "pc09\0", "pc08\0", "pa07\0", "pa08\0"}; 
+	const char*    USER_IO_STR[USER_IOn] =     {"a", "b", "c", "d", "e", "f"};
 	const char*    USER_IO_TYPE_STR[] =        {"Digital", "Analog"};
 	const char*    USER_IO_DIR_STR[] =         {"Input", "Output"};
 #endif
@@ -46,6 +49,8 @@ void IO_Configuration(void)
 	if(get_user_io_enabled(USER_IO_B)) init_user_io(USER_IO_B);
 	if(get_user_io_enabled(USER_IO_C)) init_user_io(USER_IO_C);
 	if(get_user_io_enabled(USER_IO_D)) init_user_io(USER_IO_D);
+	if(get_user_io_enabled(USER_IO_E)) init_user_io(USER_IO_E);
+	if(get_user_io_enabled(USER_IO_F)) init_user_io(USER_IO_F);
 #endif
 	
 	// ## debugging: io functions test
@@ -266,7 +271,11 @@ uint8_t get_user_io_val(uint16_t io_sel, uint16_t * val)
 			if(USER_IO_ADC_CH[idx] != USER_IO_NO_ADC)
 			{
 				// Analog Input: value
+				ADC_Init();
+				
 				*val = read_ADC((ADC_CH)USER_IO_ADC_CH[idx]);
+				
+				ADC_DeInit();
 			}
 			else
 			{
@@ -487,7 +496,7 @@ void check_phylink_status(void)
 	static uint8_t prev_link_status = 1;
 	uint8_t link_status;
 	
-#if ((DEVICE_BOARD_NAME == WIZ750SR) || (DEVICE_BOARD_NAME == W7500P_S2E) || (DEVICE_BOARD_NAME == WIZ750MINI) || (DEVICE_BOARD_NAME == WIZ750JR))
+#if ((DEVICE_BOARD_NAME == WIZ750SR) || (DEVICE_BOARD_NAME == W7500P_S2E) || (DEVICE_BOARD_NAME == WIZ750MINI) || (DEVICE_BOARD_NAME == WIZ750JR) || (DEVICE_BOARD_NAME == WIZ750DUO))
 	link_status = get_phylink_in_pin();
 #else
 	link_status = 0;
