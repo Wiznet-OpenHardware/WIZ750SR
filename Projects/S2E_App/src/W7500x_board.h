@@ -37,7 +37,7 @@
 		#define DEVICE_ID_DEFAULT            "WIZ750SR" // Device name
 		
 	#elif (DEVICE_BOARD_NAME == WIZ750DUO)
-		#define __W7500P__
+	//	#define __W7500P__
 		//#define __USE_UART_IF_SELECTOR__	// RS-232/TTL or RS-422/485 selector using UART IF selector pin. This pin will be eliminated on the target board. 
 		//#define __USE_EXT_EEPROM__			// External EEPROM or Internal Data flash (DAT0/1)
 		#define __USE_BOOT_ENTRY__			// Application boot mode entry pin activated

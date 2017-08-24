@@ -236,10 +236,12 @@ int32_t phy_id(void)
 			//printf("mdio read - idle \r\n");
 			idle_MDIO(GPIOB);
 			
-			//printf("\r\nPHY_ID = 0x%.4x , STATUS = %x, MDIO = 0x%.4x, MDC = 0x%.4x", i, data, MDIO, MDC);  //right : 0x786d // ## for debugging        
+//			printf("\r\nPHY_ID = 0x%.4x , STATUS = %x, MDIO = 0x%.4x, MDC = 0x%.4x", i, data, MDIO, MDC);  //right : 0x786d // ## for debugging    
+				
 			if((data != 0x0) && (data != 0xFFFF)) return i; //if(data != 0) return i; // old
 		}
-		printf("\r\nphy id detect error!!\r\n");
+//		printf("\r\nphy id detect error!!\r\n");
+		return 1;
 	}
 	// return 0;
 }
