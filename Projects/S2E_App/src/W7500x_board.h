@@ -237,30 +237,31 @@
 	#define USER_IO_NO_ADC				0xff
 
 	// USER IO pins for WIZ750SR / WIZwiki-W7500ECO
-	#define USER_IO_A_PIN				GPIO_Pin_13 // ECO: P28, AIN2
+	#define USER_IO_A_PIN				GPIO_Pin_12 // ECO: P28, AIN2  A1
 	#define USER_IO_A_PORT				GPIOC
-	#define USER_IO_A_ADC_CH			ADC_CH2
+	#define USER_IO_A_ADC_CH			ADC_CH3
 
-	#define USER_IO_B_PIN				GPIO_Pin_12 // ECO: P27, AIN3
+	#define USER_IO_B_PIN				GPIO_Pin_13 // ECO: P27, AIN3  A2
 	#define USER_IO_B_PORT				GPIOC
-	#define USER_IO_B_ADC_CH			ADC_CH3
+	#define USER_IO_B_ADC_CH			ADC_CH2
 
-	#define USER_IO_C_PIN				GPIO_Pin_9 // ECO: P26, AIN6
-	#define USER_IO_C_PORT				GPIOC
-	#define USER_IO_C_ADC_CH			ADC_CH6
+	#define USER_IO_C_PIN				GPIO_Pin_0       //             D1
+	#define USER_IO_C_PORT				GPIOA
+	#define USER_IO_C_ADC_CH			USER_IO_NO_ADC
 
-	#define USER_IO_D_PIN				GPIO_Pin_8 // ECO: P25, AIN7
-	#define USER_IO_D_PORT				GPIOC
-	#define USER_IO_D_ADC_CH			ADC_CH7
+	#define USER_IO_D_PIN				GPIO_Pin_1          //          D2
+	#define USER_IO_D_PORT				GPIOA
+	#define USER_IO_D_ADC_CH			USER_IO_NO_ADC
+
+	#define USER_IO_E_PIN				GPIO_Pin_8 // ECO: P25, AIN7  D3
+	#define USER_IO_E_PORT				GPIOC
+	#define USER_IO_E_ADC_CH			ADC_CH7
+
+	#define USER_IO_F_PIN				GPIO_Pin_9 // ECO: P26, AIN6  D4
+	#define USER_IO_F_PORT				GPIOC
+	#define USER_IO_F_ADC_CH			ADC_CH6
 
 	// for Duo
-	#define USER_IO_E_PIN				GPIO_Pin_7 
-	#define USER_IO_E_PORT				GPIOA
-	#define USER_IO_E_ADC_CH			USER_IO_NO_ADC
-
-	#define USER_IO_F_PIN				GPIO_Pin_8
-	#define USER_IO_F_PORT				GPIOA
-	#define USER_IO_F_ADC_CH			USER_IO_NO_ADC
 #endif
 
 
