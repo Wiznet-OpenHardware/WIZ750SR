@@ -19,7 +19,7 @@
 	//const char*    USER_IO_STR[USER_IOn] =     {"a", "b", "c", "d"};
 	//const char*    USER_IO_PIN_STR[USER_IOn] = {"p28\0", "p27\0", "p26\0", "p25\0",}; 
 	uint8_t        USER_IO_SEL[USER_IOn] =     {USER_IO_A, USER_IO_B, USER_IO_C, USER_IO_D, USER_IO_E, USER_IO_F};
-	const char*    USER_IO_PIN_STR[USER_IOn] = {"pc13\0", "pc12\0", "pc09\0", "pc08\0", "pa07\0", "pa08\0"}; 
+	const char*    USER_IO_PIN_STR[USER_IOn] = {"PC13\0", "PC12\0", "PA08\0", "PA07\0", "PC09\0", "PC08\0"}; 
 	const char*    USER_IO_STR[USER_IOn] =     {"a", "b", "c", "d", "e", "f"};
 	const char*    USER_IO_TYPE_STR[] =        {"Digital", "Analog"};
 	const char*    USER_IO_DIR_STR[] =         {"Input", "Output"};

@@ -438,7 +438,7 @@ void display_Dev_Info_main(void)
 	printf(" - Network settings: \r\n");
 		printf("\t- Obtaining IP settings: [%s]\r\n", (dev_config->options.dhcp_use == 1)?"Automatic - DHCP":"Static");
 		printf("\t- TCP/UDP ports\r\n");
-		printf("\t   + S2E data port: [%d]\r\n", dev_config->network_info[0].local_port);
+		printf("\t   + I/O data port: [%d]\r\n", dev_config->network_info[0].local_port);
 		printf("\t   + TCP/UDP setting port: [%d]\r\n", DEVICE_SEGCP_PORT);
 		printf("\t   + Firmware update port: [%d]\r\n", DEVICE_FWUP_PORT);
 	
@@ -457,14 +457,10 @@ void display_Dev_Info_main(void)
 			else printf("%s\r\n", STR_DISABLED);
 	
 	printf(" - Serial settings: \r\n");
+	/*
 		printf("\t- Data %s port:  [%s%d]\r\n", STR_UART, STR_UART, SEG_DATA_UART);
 		printf("\t   + UART IF: [%s]\r\n", uart_if_table[dev_config->serial_info[0].uart_interface]);
-		/*
-		printf("Debug: baud_rate = %d, baud_table = %d\r\n", dev_config->serial_info[0].baud_rate, baud_table[dev_config->serial_info[0].baud_rate]);
-		printf("Debug: ");
-		for(i = 0; i < 14; i++) printf("%d, ", baud_table[i]);
-		printf("\r\n");
-		*/
+		
 		printf("\t   + %d-", baud_table[dev_config->serial_info[0].baud_rate]);
 		printf("%d-", word_len_table[dev_config->serial_info[0].data_bits]);
 		printf("%s-", parity_table[dev_config->serial_info[0].parity]);
@@ -473,38 +469,41 @@ void display_Dev_Info_main(void)
 			printf("Flow control: %s\r\n", flow_ctrl_table[dev_config->serial_info[0].flow_control]);
 		else
 			printf("Flow control: %s\r\n", flow_ctrl_table[0]); // RS-422/485; flow control - NONE only
-		
+	*/
 		printf("\t- Debug %s port: [%s%d]\r\n", STR_UART, STR_UART, SEG_DEBUG_UART);
 		printf("\t   + %s / %s %s\r\n", "115200-8-N-1", "NONE", "(fixed)");
 		
-	printf(" - Serial data packing options:\r\n");
+//	printf(" - Serial data packing options:\r\n");
+	printf(" - I/O data sending interval:\r\n");
 		printf("\t- Time: ");
 			if(dev_config->network_info[0].packing_time) printf("[%d] (msec)\r\n", dev_config->network_info[0].packing_time);
 			else printf("%s\r\n", STR_DISABLED);
+	/*
 		printf("\t- Size: ");
 			if(dev_config->network_info[0].packing_size) printf("[%d] (bytes)\r\n", dev_config->network_info[0].packing_size);
 			else printf("%s\r\n", STR_DISABLED);
 		printf("\t- Char: ");
 			if(dev_config->network_info[0].packing_delimiter_length == 1) printf("[%.2X] (hex only)\r\n", dev_config->network_info[0].packing_delimiter[0]);
 			else printf("%s\r\n", STR_DISABLED);
-		
+	*/
 		printf(" - Serial command mode swtich code:\r\n");
 		printf("\t- %s\r\n", (dev_config->options.serial_command == 1)?STR_ENABLED:STR_DISABLED);
 		printf("\t- [%.2X][%.2X][%.2X] (Hex only)\r\n", dev_config->options.serial_trigger[0], dev_config->options.serial_trigger[1], dev_config->options.serial_trigger[2]);
 	
 #if ((DEVICE_BOARD_NAME == WIZ750SR) || (DEVICE_BOARD_NAME == W7500P_S2E) || (DEVICE_BOARD_NAME == WIZ750MINI) || (DEVICE_BOARD_NAME == WIZ750JR) || (DEVICE_BOARD_NAME == WIZ750DUO))
+	/*
 	printf(" - Hardware information: Status pins\r\n");
-		printf("\t- Status 1: [%s] - %s\r\n", "PA_10", dev_config->serial_info[0].dtr_en?"DTR":"PHY link");
-		printf("\t- Status 2: [%s] - %s\r\n", "PA_01", dev_config->serial_info[0].dsr_en?"DSR":"TCP connection"); // shared pin; HW_TRIG (input) / TCP connection indicator (output)
-
+		printf("\t- Status 1: [%s] - %s\r\n", "PA10", dev_config->serial_info[0].dtr_en?"DTR":"PHY link");
+		printf("\t- Status 2: [%s] - %s\r\n", "PA01", dev_config->serial_info[0].dsr_en?"DSR":"TCP connection"); // shared pin; HW_TRIG (input) / TCP connection indicator (output)
+	*/
 #ifdef __USE_USERS_GPIO__
 	printf(" - Hardware information: User I/O pins\r\n");
-		printf("\t- UserIO A: [%s] - %s / %s\r\n", "PC_13", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[0])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[0])]); 
-		printf("\t- UserIO B: [%s] - %s / %s\r\n", "PC_12", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[1])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[1])]); 
-		printf("\t- UserIO C: [%s] - %s / %s\r\n", "PC_09", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[2])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[2])]); 
-		printf("\t- UserIO D: [%s] - %s / %s\r\n", "PC_08", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[3])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[3])]); 
-		printf("\t- UserIO E: [%s] - %s / %s\r\n", "PA_07", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[4])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[4])]); 
-		printf("\t- UserIO F: [%s] - %s / %s\r\n", "PA_08", USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[5])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[5])]); 
+		printf("\t- UserIO A: [%s] - %s / %s\r\n", USER_IO_PIN_STR[0], USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[0])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[0])]); 
+		printf("\t- UserIO B: [%s] - %s / %s\r\n", USER_IO_PIN_STR[1], USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[1])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[1])]); 
+		printf("\t- UserIO C: [%s] - %s / %s\r\n", USER_IO_PIN_STR[2], USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[2])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[2])]); 
+		printf("\t- UserIO D: [%s] - %s / %s\r\n", USER_IO_PIN_STR[3], USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[3])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[3])]); 
+		printf("\t- UserIO E: [%s] - %s / %s\r\n", USER_IO_PIN_STR[4], USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[4])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[4])]); 
+		printf("\t- UserIO F: [%s] - %s / %s\r\n", USER_IO_PIN_STR[5], USER_IO_TYPE_STR[get_user_io_type(USER_IO_SEL[5])], USER_IO_DIR_STR[get_user_io_direction(USER_IO_SEL[5])]); 
 #endif
 
 #endif

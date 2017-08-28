@@ -241,7 +241,7 @@ int32_t phy_id(void)
 			if((data != 0x0) && (data != 0xFFFF)) return i; //if(data != 0) return i; // old
 		}
 //		printf("\r\nphy id detect error!!\r\n");
-		return 1;
+		//return 1;
 	}
 	// return 0;
 }
